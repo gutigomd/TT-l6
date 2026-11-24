@@ -1,0 +1,57 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <fieldset [disabled]="disabled()">
+    <legend>Додати заявку на відпустку</legend>
+
+    <label for="requestCode">Код заявки</label>
+    <input id="requestCode" type="text" formControlName="requestCode" aria-describedby="code-help">
+    <small id="code-help">Унікальний код, від 2 до 30 символів.</small>
+    @if (form.controls.requestCode.touched && form.controls.requestCode.invalid) {
+      <p role="alert">Вкажіть унікальний код заявки (2–30 символів).</p>
+    }
+
+    <label for="employeeName">Працівник</label>
+    <input id="employeeName" type="text" formControlName="employeeName" aria-describedby="employee-help">
+    <small id="employee-help">Прізвище та ім'я працівника (2–100 символів).</small>
+    @if (form.controls.employeeName.touched && form.controls.employeeName.invalid) {
+      <p role="alert">Вкажіть ім'я працівника (2–100 символів).</p>
+    }
+
+    <label for="department">Підрозділ</label>
+    <input id="department" type="text" formControlName="department" aria-describedby="dept-help">
+    <small id="dept-help">Назва підрозділу (2–100 символів).</small>
+    @if (form.controls.department.touched && form.controls.department.invalid) {
+      <p role="alert">Вкажіть підрозділ (2–100 символів).</p>
+    }
+
+    <label for="leaveType">Тип відпустки</label>
+    <select id="leaveType" formControlName="leaveType">
+      @for (type of leaveTypes; track type) {
+        <option [value]="type">{{ type }}</option>
+      }
+    </select>
+
+    <label for="startDate">Початкова дата</label>
+    <input id="startDate" type="date" formControlName="startDate">
+    @if (form.controls.startDate.touched && form.controls.startDate.invalid) {
+      <p role="alert">Оберіть початкову дату.</p>
+    }
+
+    <label for="endDate">Кінцева дата</label>
+    <input id="endDate" type="date" formControlName="endDate">
+    @if (form.controls.endDate.touched && form.controls.endDate.invalid) {
+      <p role="alert">Оберіть кінцеву дату.</p>
+    }
+
+    @if ((form.controls.startDate.touched || form.controls.endDate.touched) &&
+         form.errors?.['endBeforeStart']) {
+      <p role="alert">Кінцева дата не може бути раніше початкової.</p>
+    }
+
+    @if ((form.controls.startDate.touched || form.controls.endDate.touched) &&
+         form.errors?.['educationalDaysRange']) {
+      <p role="alert">Навчальна відпустка повинна тривати від 1 до 60 календарних днів включно.</p>
+    }
+
+    <button type="submit">Зберегти</button>
+  </fieldset>
+</form>

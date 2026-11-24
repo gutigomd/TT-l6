@@ -1,0 +1,73 @@
+<main>
+  <header>
+    <p class="eyebrow">ЛАБОРАТОРНА РОБОТА №6 · ВАРІАНТ 15</p>
+    <h1>Персонал — навчальний журнал відпусток</h1>
+    <p>Angular + ASP.NET Core</p>
+  </header>
+
+  <app-leave-request-form
+    [disabled]="pending()"
+    [resetToken]="resetToken()"
+    (saved)="add($event)"
+  />
+
+  <section class="tools" aria-label="Пошук і фільтрація">
+    <label for="search">Пошук за працівником</label>
+    <input
+      id="search"
+      type="search"
+      #search
+      [value]="query()"
+      (input)="query.set(search.value)"
+    >
+
+    <label for="departmentFilter">Фільтр за підрозділом</label>
+    <select
+      id="departmentFilter"
+      #deptSelect
+      [value]="selectedDepartment()"
+      (change)="selectedDepartment.set(deptSelect.value)"
+    >
+      <option value="">Усі підрозділи</option>
+      @for (dept of departments(); track dept) {
+        <option [value]="dept">{{ dept }}</option>
+      }
+    </select>
+
+    <button type="button" (click)="load()" [disabled]="pending()">
+      Оновити список
+    </button>
+  </section>
+
+  @if (loading()) {
+    <p role="status">Завантаження…</p>
+  }
+  @if (pending() && !loading()) {
+    <p role="status">Виконується запит…</p>
+  }
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  }
+  @if (message()) {
+    <p role="status">{{ message() }}</p>
+  }
+
+  <p class="summary" aria-live="polite">
+    Видимих заявок: {{ visible().length }}.
+    Сума календарних днів: {{ totalDays() }}.
+  </p>
+
+  @if (!loading() && !error() && visible().length === 0) {
+    <p>За поточними умовами заявок немає.</p>
+  }
+
+  <div class="catalog">
+    @for (item of visible(); track item.id) {
+      <app-leave-request-item
+        [item]="item"
+        [disabled]="pending()"
+        (removed)="remove($event)"
+      />
+    }
+  </div>
+</main>
